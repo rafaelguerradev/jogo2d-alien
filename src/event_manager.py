@@ -9,30 +9,34 @@ from alien import Alien
 # ======================
 # EVENT MANAGER
 # ======================
+
 class EventManager:
     def __init__(self, ship, fire_bullet):
         self.ship = ship
         self.fire_bullet = fire_bullet
+
+        # Mapas de ações
+        self.keydown_actions = {
+            pygame.K_RIGHT: lambda: setattr(self.ship, "moving_right", True),
+            pygame.K_LEFT: lambda: setattr(self.ship, "moving_left", True),
+            pygame.K_SPACE: self.fire_bullet,
+        }
+
+        self.keyup_actions = {
+            pygame.K_RIGHT: lambda: setattr(self.ship, "moving_right", False),
+            pygame.K_LEFT: lambda: setattr(self.ship, "moving_left", False),
+        }
 
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self._keydown(event)
+                self._handle_key(event.key, self.keydown_actions)
             elif event.type == pygame.KEYUP:
-                self._keyup(event)
+                self._handle_key(event.key, self.keyup_actions)
 
-    def _keydown(self, event):
-        if event.key == pygame.K_RIGHT:
-            self.ship.moving_right = True
-        elif event.key == pygame.K_LEFT:
-            self.ship.moving_left = True
-        elif event.key == pygame.K_SPACE:
-            self.fire_bullet()
-
-    def _keyup(self, event):
-        if event.key == pygame.K_RIGHT:
-            self.ship.moving_right = False
-        elif event.key == pygame.K_LEFT:
-            self.ship.moving_left = False
+    def _handle_key(self, key, action_map):
+        action = action_map.get(key)
+        if action:
+            action()
