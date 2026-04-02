@@ -1,6 +1,6 @@
 import pygame
 from pygame.surface import Surface
-from settings import Settings
+from .settings import Settings
 
 
 class Ship:
